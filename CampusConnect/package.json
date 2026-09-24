@@ -1,0 +1,10 @@
+{
+  "name": "campusconnect",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server"
+  }
+}
