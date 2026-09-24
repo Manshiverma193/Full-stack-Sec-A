@@ -1,66 +1,31 @@
+import User from "../models/User.js";
+import Event from "../models/Event.js";
 import Resource from "../models/Resource.js";
+import Registration from "../models/Registration.js";
 
-export const getResources = async (
-  req,
-  res
-) => {
+export const getDashboardStats = async (req, res) => {
   try {
-    const resources =
-      await Resource.find()
-        .sort({ createdAt: -1 });
+    const users = await User.countDocuments();
+    const events = await Event.countDocuments();
+    const resources = await Resource.countDocuments();
+    const registrations =
+      await Registration.countDocuments();
 
-    res.json({ resources });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
-  }
-};
-
-export const createResource = async (
-  req,
-  res
-) => {
-  try {
-    const resource =
-      await Resource.create({
-        ...req.body,
-        createdBy: req.user._id
-      });
-
-    res.status(201).json({
-      message: "Resource created",
-      resource
+    res.status(200).json({
+      success: true,
+      stats: {
+        users,
+        events,
+        resources,
+        registrations
+      }
     });
   } catch (error) {
+    console.error("Dashboard error:", error);
+
     res.status(500).json({
-      message: error.message
-    });
-  }
-};
-
-export const deleteResource = async (
-  req,
-  res
-) => {
-  try {
-    const resource =
-      await Resource.findByIdAndDelete(
-        req.params.id
-      );
-
-    if (!resource) {
-      return res.status(404).json({
-        message: "Resource not found"
-      });
-    }
-
-    res.json({
-      message: "Resource deleted"
-    });
-  } catch (error) {
-    res.status(500).json({
-      message: error.message
+      success: false,
+      message: "Failed to fetch dashboard statistics"
     });
   }
 };
